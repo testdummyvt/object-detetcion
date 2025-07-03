@@ -3,7 +3,7 @@ import argparse
 import yaml
 from pathlib import Path
 import shutil
-from ultralytics.utils.downloads import download
+from od_engine.utils.download import download
 
 
 def main(local_dataset_dir):

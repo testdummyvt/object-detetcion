@@ -28,7 +28,6 @@ def process_coco_human_parts(anno_data_file: str) -> None:
     }
 
     new_annos = []
-    new_anno_count = 1
     for anno in anno_data["annotations"]:
         class_id = anno["category_id"]
         if class_id == 4:
