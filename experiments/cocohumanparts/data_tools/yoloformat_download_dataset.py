@@ -26,7 +26,7 @@ def download(url, dir=".", unzip=True, delete=True, threads=1):
         dir.mkdir(parents=True, exist_ok=True)  # Create dir if it does not exist
 
         print(f"Downloading {url} to {f}...")
-        download_url_to_file(url, f, progress=True)
+        download_url_to_file(url, str(f), progress=True)
 
         if unzip and f.suffix == ".zip":
             print(f"Unzipping {f}...")
