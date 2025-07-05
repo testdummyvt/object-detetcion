@@ -18,47 +18,51 @@ def main(local_dataset_dir):
     remote_dataset_url = (
         "https://huggingface.co/datasets/testdummyvt/cocohumanparts/resolve/main"
     )
+    # Create the local dataset directory if it does not exist
+    os.makedirs(local_dataset_dir, exist_ok=True)
+
+    # Create local images and annotations directories
+    local_images_dir = os.path.join(local_dataset_dir, "images")
+    local_annotations_dir = os.path.join(local_dataset_dir, "annotations")
+    os.makedirs(local_images_dir, exist_ok=True)
+    os.makedirs(local_annotations_dir, exist_ok=True)
 
     # URLs for the training and validation images
     images_train_url = remote_dataset_url + "/images/train.zip"
     images_val_url = remote_dataset_url + "/images/val.zip"
 
     # Download images in parallel using 2 threads
-    download([images_train_url, images_val_url], local_dataset_dir, threads=2)
+    download([images_train_url, images_val_url], local_images_dir, threads=2)
 
     # URLs for the training and validation labels (COCO format)
     labels_train_url = (
-        remote_dataset_url + "/person_humanparts_train2017_coco_format.json"
+        remote_dataset_url + "/annotations/person_humanparts_train2017_coco_format.json"
     )
-    labels_val_url = remote_dataset_url + "/person_humanparts_val2017_coco_format.json"
+    labels_val_url = (
+        remote_dataset_url + "/annotations/person_humanparts_val2017_coco_format.json"
+    )
 
     # Download labels in parallel using 2 threads
-    download([labels_train_url, labels_val_url], local_dataset_dir, threads=2)
+    download([labels_train_url, labels_val_url], local_annotations_dir, threads=2)
 
-    download([labels_train_url], local_dataset_dir, threads=1)
-
-    # Rename val folder to valid
+    # Rename the files to train.json and valid.json
     os.rename(
-        os.path.join(local_dataset_dir, "val"), os.path.join(local_dataset_dir, "valid")
+        os.path.join(
+            local_annotations_dir, "person_humanparts_train2017_coco_format.json"
+        ),
+        os.path.join(local_annotations_dir, "instances_train.json"),
     )
-
-    # Copy label files to train and valid folders
-    current_train_json_file = (
-        local_dataset_dir + "/" + "person_humanparts_train2017_coco_format.json"
+    os.rename(
+        os.path.join(
+            local_annotations_dir, "person_humanparts_val2017_coco_format.json"
+        ),
+        os.path.join(local_annotations_dir, "instances_val.json"),
     )
-    current_valid_json_file = (
-        local_dataset_dir + "/" + "person_humanparts_val2017_coco_format.json"
+    # Copy validation to test
+    shutil.copyfile(
+        os.path.join(local_annotations_dir, "instances_val.json"),
+        os.path.join(local_annotations_dir, "instances_test.json"),
     )
-
-    new_train_json_file = (
-        local_dataset_dir + "/" + "train" + "/" + "_annotations.coco.json"
-    )
-    new_valid_json_file = (
-        local_dataset_dir + "/" + "valid" + "/" + "_annotations.coco.json"
-    )
-
-    shutil.copyfile(current_train_json_file, new_train_json_file)
-    shutil.copyfile(current_valid_json_file, new_valid_json_file)
 
 
 if __name__ == "__main__":

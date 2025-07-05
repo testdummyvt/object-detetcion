@@ -13,8 +13,6 @@ categories = [
 ]
 
 
-
-
 def process_coco_human_parts(anno_data_file: str) -> None:
     """
     Read COCO label file and modify class values:
