@@ -5,15 +5,22 @@ import shutil
 import yaml
 
 categories = [
-    {"id": 0, "supercategory": "person", "name": "person"},
-    {"id": 1, "supercategory": "head", "name": "head"},
-    {"id": 2, "supercategory": "face", "name": "face"},
-    {"id": 3, "supercategory": "hand", "name": "hand"},
-    {"id": 4, "supercategory": "foot", "name": "foot"},
+    {"id": 1, "supercategory": "person", "name": "person"},
+    {"id": 2, "supercategory": "head", "name": "head"},
+    {"id": 3, "supercategory": "face", "name": "face"},
+    {"id": 4, "supercategory": "hand", "name": "hand"},
+    {"id": 5, "supercategory": "foot", "name": "foot"},
 ]
 
 
+
+
 def process_coco_human_parts(anno_data_file: str) -> None:
+    """
+    Read COCO label file and modify class values:
+    - Class 5 becomes 4
+    - Classes 6 and 7 become 5
+    """
     with open(anno_data_file, "r") as f:
         anno_data = json.load(f)
 
@@ -30,10 +37,10 @@ def process_coco_human_parts(anno_data_file: str) -> None:
     new_annos = []
     for anno in anno_data["annotations"]:
         class_id = anno["category_id"]
-        if class_id == 4:
-            class_id = 3
-        elif class_id in [5, 6]:
+        if class_id == 5:
             class_id = 4
+        elif class_id in [6, 7]:
+            class_id = 5
         anno["category_id"] = class_id
         new_annos.append(anno)
 
