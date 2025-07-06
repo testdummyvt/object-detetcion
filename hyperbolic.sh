@@ -12,3 +12,5 @@ sudo apt install git-lfs -y
 sudo apt install htop -y
 sudo apt install tmux -y
 
+git config --global user.email "testdummyvt@gmail.com"
+git config --global user.name "testdummyvt"
