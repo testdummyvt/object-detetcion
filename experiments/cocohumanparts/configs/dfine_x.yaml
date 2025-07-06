@@ -1,5 +1,5 @@
-data_root: /home/user/datasets/cocohumanparts
-work_dir: /home/user/experiments/cocohumanparts/dfine_x
+data_root: /home/ubuntu/datasets/cocohumanparts
+work_dir: /home/ubuntu/experiments/cocohumanparts/dfine_x
 callback_monitor: val/map_50
 disable_infer_num_classes: false
 engine:
@@ -10,7 +10,7 @@ data:
   task: DETECTION
   data_format: coco_instances
   train_subset:
-    batch_size: 48
+    batch_size: 8
     subset_name: train
     transforms:
     - class_path: torchvision.transforms.v2.ToImage
@@ -56,13 +56,13 @@ data:
     - class_path: torchvision.transforms.v2.GaussianNoise
       enable: false
     transform_lib_type: TORCHVISION
-    num_workers: 48
+    num_workers: 8
     sampler:
       class_path: otx.algo.samplers.balanced_sampler.BalancedSampler
       init_args: {}
     to_tv_image: true
   val_subset:
-    batch_size: 48
+    batch_size: 16
     subset_name: val
     transforms:
     - class_path: torchvision.transforms.v2.ToImage
@@ -76,13 +76,13 @@ data:
         dtype: ${as_torch_dtype:torch.float32}
         scale: true
     transform_lib_type: TORCHVISION
-    num_workers: 48
+    num_workers: 8
     sampler:
       class_path: torch.utils.data.RandomSampler
       init_args: {}
     to_tv_image: true
   test_subset:
-    batch_size: 48
+    batch_size: 16
     subset_name: test
     transforms:
     - class_path: torchvision.transforms.v2.ToImage
@@ -96,7 +96,7 @@ data:
         dtype: ${as_torch_dtype:torch.float32}
         scale: true
     transform_lib_type: TORCHVISION
-    num_workers: 48
+    num_workers: 8
     sampler:
       class_path: torch.utils.data.RandomSampler
       init_args: {}
@@ -130,9 +130,9 @@ data:
   input_size_multiplier: 1
 workspace:
   use_sub_dir: true
-max_epochs: 50
+max_epochs: 25
 deterministic: false
-precision: 16-mixed
+precision: 16
 callbacks:
 - class_path: otx.algo.callbacks.adaptive_early_stopping.EarlyStoppingWithWarmup
   init_args:
@@ -147,7 +147,7 @@ callbacks:
     check_on_train_epoch_end: false
     log_rank_zero_only: false
     warmup_iters: 100
-    warmup_epochs: 7
+    warmup_epochs: 3
 - class_path: lightning.pytorch.callbacks.RichProgressBar
   init_args:
     refresh_rate: 1
@@ -200,13 +200,6 @@ callbacks:
     min_earlystop_patience: 5
     min_lrschedule_patience: 3
 logger:
-- class_path: lightning.pytorch.loggers.CSVLogger
-  init_args:
-    save_dir: ''
-    name: csv/
-    version: null
-    prefix: ''
-    flush_logs_every_n_steps: 100
 - class_path: lightning.pytorch.loggers.TensorBoardLogger
   init_args:
     save_dir: ''

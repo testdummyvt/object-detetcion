@@ -14,3 +14,6 @@ sudo apt install tmux -y
 
 git config --global user.email "testdummyvt@gmail.com"
 git config --global user.name "testdummyvt"
+
+CDIR=$(pwd)
+export PYTHONPATH=$CDIR:$PYTHONPATH

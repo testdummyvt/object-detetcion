@@ -1,6 +1,6 @@
 # Script to download and prepare dataset on hyperbolic
 
-LOCAL_DIR="/home/user/datasets/cocohumanparts"
+LOCAL_DIR="/home/ubuntu/datasets/cocohumanparts"
 
 # # Download the dataset
 # python data_tools/yoloformat_download_dataset.py --local_dataset_dir $LOCAL_DIR
