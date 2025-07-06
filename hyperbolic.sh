@@ -11,3 +11,4 @@ uv sync
 sudo apt install git-lfs -y
 sudo apt install htop -y
 sudo apt install tmux -y
+
