@@ -1,5 +1,5 @@
 data_root: /home/user/datasets/cocohumanparts
-work_dir: /home/user/experiments/cocohumanparts/dfine_x
+work_dir: /home/user/experiments/cocohumanparts/dfine_m
 callback_monitor: val/map_50
 disable_infer_num_classes: false
 engine:
@@ -10,7 +10,7 @@ data:
   task: DETECTION
   data_format: coco_instances
   train_subset:
-    batch_size: 48
+    batch_size: 80
     subset_name: train
     transforms:
     - class_path: torchvision.transforms.v2.ToImage
@@ -56,13 +56,13 @@ data:
     - class_path: torchvision.transforms.v2.GaussianNoise
       enable: false
     transform_lib_type: TORCHVISION
-    num_workers: 48
+    num_workers: 16
     sampler:
       class_path: otx.algo.samplers.balanced_sampler.BalancedSampler
       init_args: {}
     to_tv_image: true
   val_subset:
-    batch_size: 48
+    batch_size: 80
     subset_name: val
     transforms:
     - class_path: torchvision.transforms.v2.ToImage
@@ -76,13 +76,13 @@ data:
         dtype: ${as_torch_dtype:torch.float32}
         scale: true
     transform_lib_type: TORCHVISION
-    num_workers: 48
+    num_workers: 16
     sampler:
       class_path: torch.utils.data.RandomSampler
       init_args: {}
     to_tv_image: true
   test_subset:
-    batch_size: 48
+    batch_size: 80
     subset_name: test
     transforms:
     - class_path: torchvision.transforms.v2.ToImage
@@ -96,7 +96,7 @@ data:
         dtype: ${as_torch_dtype:torch.float32}
         scale: true
     transform_lib_type: TORCHVISION
-    num_workers: 48
+    num_workers: 16
     sampler:
       class_path: torch.utils.data.RandomSampler
       init_args: {}
@@ -245,7 +245,7 @@ reload_dataloaders_every_n_epochs: 0
 model:
   class_path: otx.algo.detection.d_fine.DFine
   init_args:
-    model_name: dfine_hgnetv2_x
+    model_name: dfine_hgnetv2_m
     label_info: 80
     input_size:
     - 640

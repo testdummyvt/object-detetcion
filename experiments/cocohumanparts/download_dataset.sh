@@ -1,6 +1,6 @@
 # Script to download and prepare dataset on hyperbolic
 
-LOCAL_DIR="/home/ubuntu/datasets/cocohumanparts"
+LOCAL_DIR="/home/user/datasets/cocohumanparts"
 
 # # Download the dataset
 # python data_tools/yoloformat_download_dataset.py --local_dataset_dir $LOCAL_DIR
@@ -11,3 +11,6 @@ LOCAL_DIR="/home/ubuntu/datasets/cocohumanparts"
 python data_tools/cocoformat_download_dataset.py --local_dataset_dir $LOCAL_DIR
 # Create fused hands and legs dataset in coco format
 python data_tools/fuse_hands_legs.py --datafolder $LOCAL_DIR --format_type coco
+
+# Remove backup files
+rm -rf $LOCAL_DIR/annotations/*backup.json
