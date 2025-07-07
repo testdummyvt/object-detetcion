@@ -46,6 +46,7 @@ def process_coco_human_parts(anno_data_file: str, dest_anno_file: str) -> None:
                     * np.abs(part_bbox[3] - part_bbox[1])
                 )
                 part_anno = anno.copy()
+                part_bbox = [part_bbox[0], part_bbox[1], part_bbox[2] - part_bbox[0], part_bbox[3] - part_bbox[1]]
                 part_anno["bbox"] = part_bbox
                 part_anno["area"] = part_area
                 part_anno["category_id"] = part_label+1
