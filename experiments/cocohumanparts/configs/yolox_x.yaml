@@ -1,5 +1,5 @@
 data_root: /home/ubuntu/datasets/cocohumanparts
-work_dir: /home/ubuntu/experiments/cocohumanparts/dfine_x
+work_dir: /home/ubuntu/experiments/cocohumanparts/yolox_x
 callback_monitor: val/map_50
 disable_infer_num_classes: false
 engine:
@@ -10,97 +10,133 @@ data:
   task: DETECTION
   data_format: coco_instances
   train_subset:
-    batch_size: 12
+    batch_size: 16
     subset_name: train
     transforms:
-    - class_path: torchvision.transforms.v2.ToImage
-    - class_path: torchvision.transforms.v2.RandomPhotometricDistort
+    - class_path: otx.core.data.transform_libs.torchvision.CachedMosaic
       init_args:
-        p: 0.5
-    - class_path: torchvision.transforms.v2.RandomZoomOut
+        random_pop: false
+        max_cached_images: 20
+        img_scale: $(input_size)
+    - class_path: otx.core.data.transform_libs.torchvision.RandomAffine
       init_args:
-        fill: 0
-    - class_path: otx.core.data.transform_libs.torchvision.RandomIoUCrop
+        border: $(input_size) * -0.5
+    - class_path: otx.core.data.transform_libs.torchvision.CachedMixUp
       init_args:
-        p: 0.8
-    - class_path: torchvision.transforms.v2.SanitizeBoundingBoxes
-      init_args:
-        min_size: 1
-    - class_path: otx.core.data.transform_libs.torchvision.RandomFlip
-      init_args:
+        img_scale: $(input_size)
+        ratio_range:
+        - 1.0
+        - 1.0
         prob: 0.5
+        random_pop: false
+        max_cached_images: 10
     - class_path: otx.core.data.transform_libs.torchvision.Resize
       init_args:
         scale: $(input_size)
+        keep_ratio: true
         transform_bbox: true
-        keep_ratio: false
-        is_numpy_to_tvtensor: true
     - class_path: otx.core.data.transform_libs.torchvision.PhotoMetricDistortion
       enable: false
+    - class_path: otx.core.data.transform_libs.torchvision.YOLOXHSVRandomAug
+    - class_path: otx.core.data.transform_libs.torchvision.RandomFlip
       init_args:
+        prob: 0.5
+    - class_path: otx.core.data.transform_libs.torchvision.Pad
+      init_args:
+        pad_to_square: true
+        pad_val: 114
         is_numpy_to_tvtensor: true
-    - class_path: otx.core.data.transform_libs.torchvision.RandomAffine
+    - class_path: torchvision.transforms.v2.RandomVerticalFlip
       enable: false
-      init_args:
-        is_numpy_to_tvtensor: true
     - class_path: torchvision.transforms.v2.GaussianBlur
       enable: false
       init_args:
         kernel_size: 5
-    - class_path: torchvision.transforms.v2.RandomVerticalFlip
-      enable: false
     - class_path: torchvision.transforms.v2.ToDtype
       init_args:
         dtype: ${as_torch_dtype:torch.float32}
-        scale: true
+    - class_path: torchvision.transforms.v2.Normalize
+      init_args:
+        mean:
+        - 0.0
+        - 0.0
+        - 0.0
+        std:
+        - 1.0
+        - 1.0
+        - 1.0
     - class_path: torchvision.transforms.v2.GaussianNoise
       enable: false
     transform_lib_type: TORCHVISION
-    num_workers: 12
+    num_workers: 8
     sampler:
       class_path: otx.algo.samplers.balanced_sampler.BalancedSampler
       init_args: {}
-    to_tv_image: true
+    to_tv_image: false
   val_subset:
     batch_size: 16
     subset_name: val
     transforms:
-    - class_path: torchvision.transforms.v2.ToImage
     - class_path: otx.core.data.transform_libs.torchvision.Resize
       init_args:
         scale: $(input_size)
-        keep_ratio: false
+        keep_ratio: true
+    - class_path: otx.core.data.transform_libs.torchvision.Pad
+      init_args:
+        pad_to_square: true
+        pad_val: 114
         is_numpy_to_tvtensor: true
     - class_path: torchvision.transforms.v2.ToDtype
       init_args:
         dtype: ${as_torch_dtype:torch.float32}
-        scale: true
+    - class_path: torchvision.transforms.v2.Normalize
+      init_args:
+        mean:
+        - 0.0
+        - 0.0
+        - 0.0
+        std:
+        - 1.0
+        - 1.0
+        - 1.0
     transform_lib_type: TORCHVISION
     num_workers: 8
     sampler:
       class_path: torch.utils.data.RandomSampler
       init_args: {}
-    to_tv_image: true
+    to_tv_image: false
   test_subset:
     batch_size: 16
     subset_name: test
     transforms:
-    - class_path: torchvision.transforms.v2.ToImage
     - class_path: otx.core.data.transform_libs.torchvision.Resize
       init_args:
         scale: $(input_size)
-        keep_ratio: false
+        keep_ratio: true
+    - class_path: otx.core.data.transform_libs.torchvision.Pad
+      init_args:
+        pad_to_square: true
+        pad_val: 114
         is_numpy_to_tvtensor: true
     - class_path: torchvision.transforms.v2.ToDtype
       init_args:
         dtype: ${as_torch_dtype:torch.float32}
-        scale: true
+    - class_path: torchvision.transforms.v2.Normalize
+      init_args:
+        mean:
+        - 0.0
+        - 0.0
+        - 0.0
+        std:
+        - 1.0
+        - 1.0
+        - 1.0
     transform_lib_type: TORCHVISION
     num_workers: 8
     sampler:
       class_path: torch.utils.data.RandomSampler
       init_args: {}
-    to_tv_image: true
+    to_tv_image: false
   tile_config:
     enable_tiler: false
     enable_adaptive_tiling: true
@@ -116,9 +152,9 @@ data:
   vpm_config:
     use_bbox: false
     use_point: false
-  mem_cache_size: 8GB
+  mem_cache_size: 1GB
   mem_cache_img_max_size: null
-  image_color_channel: RGB
+  image_color_channel: BGR
   stack_images: true
   include_polygons: false
   ignore_index: 255
@@ -130,7 +166,7 @@ data:
   input_size_multiplier: 1
 workspace:
   use_sub_dir: true
-max_epochs: 50
+max_epochs: 200
 deterministic: false
 precision: 16
 callbacks:
@@ -146,7 +182,7 @@ callbacks:
     divergence_threshold: null
     check_on_train_epoch_end: false
     log_rank_zero_only: false
-    warmup_iters: 100
+    warmup_iters: 30
     warmup_epochs: 3
 - class_path: lightning.pytorch.callbacks.RichProgressBar
   init_args:
@@ -195,11 +231,18 @@ callbacks:
     log_weight_decay: false
 - class_path: otx.algo.callbacks.adaptive_train_scheduling.AdaptiveTrainScheduling
   init_args:
-    max_interval: 1
+    max_interval: 5
     decay: -0.025
     min_earlystop_patience: 5
     min_lrschedule_patience: 3
 logger:
+- class_path: lightning.pytorch.loggers.CSVLogger
+  init_args:
+    save_dir: ''
+    name: csv/
+    version: null
+    prefix: ''
+    flush_logs_every_n_steps: 100
 - class_path: lightning.pytorch.loggers.TensorBoardLogger
   init_args:
     save_dir: ''
@@ -228,7 +271,8 @@ max_steps: -1
 overfit_batches: 0.0
 check_val_every_n_epoch: 1
 num_sanity_val_steps: 0
-accumulate_grad_batches: 4
+accumulate_grad_batches: 2
+gradient_clip_val: 35.0
 inference_mode: true
 use_distributed_sampler: true
 detect_anomaly: false
@@ -236,9 +280,9 @@ barebones: false
 sync_batchnorm: false
 reload_dataloaders_every_n_epochs: 0
 model:
-  class_path: otx.algo.detection.d_fine.DFine
+  class_path: otx.algo.detection.yolox.YOLOX
   init_args:
-    model_name: dfine_hgnetv2_x
+    model_name: yolox_x
     label_info: 80
     input_size:
     - 640
@@ -246,7 +290,7 @@ model:
     optimizer:
       class_path: torch.optim.AdamW
       init_args:
-        lr: 0.00025
+        lr: 0.001
         betas:
         - 0.9
         - 0.999
@@ -265,16 +309,15 @@ model:
             monitor: val/map_50
             mode: max
             factor: 0.1
-            patience: 6
+            patience: 4
             threshold: 0.0001
             threshold_mode: rel
             cooldown: 0
             min_lr: 0.0
             eps: 1.0e-08
-        num_warmup_steps: 100
+        num_warmup_steps: 0
         warmup_interval: step
     metric: otx.core.metrics.fmeasure._mean_ap_f_measure_callable
-    multi_scale: true
     torch_compile: false
     tile_config:
       enable_tiler: false
