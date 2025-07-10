@@ -7,6 +7,7 @@ sudo apt-get install cmake -y
 uv venv
 source .venv/bin/activate
 uv sync
+uv pip install comet-ml
 
 sudo apt install git-lfs -y
 sudo apt install htop -y

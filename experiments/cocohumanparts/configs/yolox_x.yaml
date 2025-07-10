@@ -166,7 +166,7 @@ data:
   input_size_multiplier: 1
 workspace:
   use_sub_dir: true
-max_epochs: 200
+max_epochs: 50
 deterministic: false
 precision: 16
 callbacks:
@@ -236,13 +236,6 @@ callbacks:
     min_earlystop_patience: 5
     min_lrschedule_patience: 3
 logger:
-- class_path: lightning.pytorch.loggers.CSVLogger
-  init_args:
-    save_dir: ''
-    name: csv/
-    version: null
-    prefix: ''
-    flush_logs_every_n_steps: 100
 - class_path: lightning.pytorch.loggers.TensorBoardLogger
   init_args:
     save_dir: ''
